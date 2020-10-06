@@ -1,5 +1,6 @@
 import Vue from "vue";
 import { uid } from 'quasar';
+
 const state = {
     tasks: {
         'id1': {
@@ -29,9 +30,65 @@ const state = {
             completed: false,
             dueDate: "1400/07/01",
             dueTime: "16:30",
-        }
+        },
+        'id5': {
+            id: 1,
+            name: "Go to shop",
+            completed: true,
+            dueDate: "1399/06/01",
+            dueTime: "17:29",
+        },
+        'id7': {
+            id: 2,
+            name: "Buy apples",
+            completed: false,
+            dueDate: "1398/07/01",
+            dueTime: "16:30",
+        },
+        'id8': {
+            id: 3,
+            name: "Buy Bananas",
+            completed: false,
+            dueDate: "1400/07/01",
+            dueTime: "16:30",
+        },
+        'id10': {
+            id: 4,
+            name: "Goto Bed",
+            completed: false,
+            dueDate: "1400/07/01",
+            dueTime: "16:30",
+        },
+        'id12': {
+            id: 1,
+            name: "Go to shop",
+            completed: true,
+            dueDate: "1399/06/01",
+            dueTime: "17:29",
+        },
+        'id16': {
+            id: 2,
+            name: "Buy apples",
+            completed: false,
+            dueDate: "1398/07/01",
+            dueTime: "16:30",
+        },
+        'id13': {
+            id: 3,
+            name: "Buy Bananas",
+            completed: false,
+            dueDate: "1400/07/01",
+            dueTime: "16:30",
+        },
+        'id17': {
+            id: 4,
+            name: "Goto Bed",
+            completed: false,
+            dueDate: "1400/07/01",
+            dueTime: "16:30",
+        },
     },
-    search: 'salam'
+    search: '',
 }
 
 const mutations = {
@@ -72,9 +129,25 @@ const actions = {
 }
 
 const getters = {
-    tasksTodo: (state) => {
+    tasksFiltered: (state) => {
+        let tasksFiltered = {}
+        if (state.search) {
+            Object.keys(state.tasks).forEach(function (key) {
+                let task = state.tasks[key],
+                    taskNameLowerCase = task.name.toLowerCase(),
+                    searchLowerCase = state.search.toLowerCase()
+                if (taskNameLowerCase.includes(searchLowerCase)) {
+                    tasksFiltered[key] = task
+                }
+            })
+            return tasksFiltered
+        }
+        return state.tasks
+    },
+    tasksTodo: (state, getters) => {
+        let tasksFiltered = getters.tasksFiltered
         let tasks = {}
-        Object.keys(state.tasks).forEach(function (key) {
+        Object.keys(tasksFiltered).forEach(function (key) {
             let task = state.tasks[key]
             if (!task.completed) {
                 tasks[key] = task
@@ -82,9 +155,10 @@ const getters = {
         })
         return tasks
     },
-    tasksCompleted: (state) => {
+    tasksCompleted: (state, getters) => {
+        let tasksFiltered = getters.tasksFiltered
         let tasks = {}
-        Object.keys(state.tasks).forEach(function (key) {
+        Object.keys(tasksFiltered).forEach(function (key) {
             let task = state.tasks[key]
             if (task.completed) {
                 tasks[key] = task

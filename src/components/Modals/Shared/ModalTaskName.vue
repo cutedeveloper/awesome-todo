@@ -4,6 +4,7 @@
     :value="name"
     @input="$emit('update:name', $event)"
     label="Task Name"
+    v-select-all
     autofocus
     clearable
     class="q-mb-sm"
@@ -12,8 +13,12 @@
 </template>
 
 <script>
+import { selectAll } from "src/directives/select-all";
 export default {
   props: ["name"],
+  directives: {
+    selectAll,
+  },
 };
 </script>
 

@@ -2,15 +2,28 @@
   <q-layout view="hHh lpR lFf">
     <q-header>
       <q-toolbar>
-
-        <q-toolbar-title class="absolute-center"> Awesome Todo </q-toolbar-title>
-
+        <q-toolbar-title class="absolute-center">
+          Awesome Todo
+        </q-toolbar-title>
+        <q-btn
+          to="/auth"
+          icon-right="account_circle"
+          label="Login"
+          flat
+          class="absolute-right"
+        />
       </q-toolbar>
     </q-header>
 
     <q-footer class="foot">
       <q-tabs>
-        <q-route-tab v-for="(link, index) in this.essentialLinks" :icon="link.icon" :label="link.title" :to="link.link" :key="index"/>
+        <q-route-tab
+          v-for="(link, index) in this.essentialLinks"
+          :icon="link.icon"
+          :label="link.title"
+          :to="link.link"
+          :key="index"
+        />
       </q-tabs>
     </q-footer>
 
@@ -69,8 +82,8 @@ export default {
 </script>
 <style scoped>
 @media screen and (min-width: 768px) {
- .foot {
-   display: none;
- } 
+  .foot {
+    display: none;
+  }
 }
 </style>
