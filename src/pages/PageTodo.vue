@@ -10,7 +10,7 @@
         ></tasks-todo>
 
         <tasks-completed
-          v-if="Object.keys(tasksTodo).length"
+          v-if="Object.keys(tasksCompleted).length"
           :tasksCompleted="tasksCompleted"
           class="q-mb-xl"
         ></tasks-completed>

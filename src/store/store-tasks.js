@@ -1,92 +1,9 @@
 import Vue from "vue";
 import { uid } from 'quasar';
+import { firebaseAuth, firebaseDb } from 'boot/firebase'
 
 const state = {
     tasks: {
-        'id1': {
-            id: 1,
-            name: "Go to shop",
-            completed: true,
-            dueDate: "1399/06/01",
-            dueTime: "17:29",
-        },
-        'id2': {
-            id: 2,
-            name: "Buy apples",
-            completed: false,
-            dueDate: "1398/07/01",
-            dueTime: "16:30",
-        },
-        'id3': {
-            id: 3,
-            name: "Buy Bananas",
-            completed: false,
-            dueDate: "1400/07/01",
-            dueTime: "16:30",
-        },
-        'id4': {
-            id: 4,
-            name: "Goto Bed",
-            completed: false,
-            dueDate: "1400/07/01",
-            dueTime: "16:30",
-        },
-        'id5': {
-            id: 1,
-            name: "Go to shop",
-            completed: true,
-            dueDate: "1399/06/01",
-            dueTime: "17:29",
-        },
-        'id7': {
-            id: 2,
-            name: "Buy apples",
-            completed: false,
-            dueDate: "1398/07/01",
-            dueTime: "16:30",
-        },
-        'id8': {
-            id: 3,
-            name: "Buy Bananas",
-            completed: false,
-            dueDate: "1400/07/01",
-            dueTime: "16:30",
-        },
-        'id10': {
-            id: 4,
-            name: "Goto Bed",
-            completed: false,
-            dueDate: "1400/07/01",
-            dueTime: "16:30",
-        },
-        'id12': {
-            id: 1,
-            name: "Go to shop",
-            completed: true,
-            dueDate: "1399/06/01",
-            dueTime: "17:29",
-        },
-        'id16': {
-            id: 2,
-            name: "Buy apples",
-            completed: false,
-            dueDate: "1398/07/01",
-            dueTime: "16:30",
-        },
-        'id13': {
-            id: 3,
-            name: "Buy Bananas",
-            completed: false,
-            dueDate: "1400/07/01",
-            dueTime: "16:30",
-        },
-        'id17': {
-            id: 4,
-            name: "Goto Bed",
-            completed: false,
-            dueDate: "1400/07/01",
-            dueTime: "16:30",
-        },
     },
     search: '',
 }
@@ -109,22 +26,63 @@ const mutations = {
 }
 
 const actions = {
-    updateTask({ commit }, payload) {
-        commit('updateTask', payload)
+    updateTask({ dispatch }, payload) {
+        dispatch('fbUpdateTask', payload)
     },
-    deleteTask({ commit }, id) {
-        commit('deleteTask', id)
+    deleteTask({ dispatch }, id) {
+        dispatch('fbDeleteTask', id)
     },
-    addTask({ commit }, task) {
+    addTask({ dispatch }, task) {
         let id = uid()
         let payload = {
             id: id,
             task: task
         }
-        commit('addTask', payload)
+        dispatch('fbAddTask', payload)
     },
     setSearch({ commit }, searchPhrase) {
         commit('setSearch', searchPhrase)
+    },
+    fbReadData({ commit }) {
+        let currentUser = firebaseAuth.currentUser;
+        let tasks = firebaseDb.ref('tasks/' + currentUser.uid)
+        tasks.on('child_added', snapshot => {
+            let task = snapshot.val()
+            let payload = {
+                id: snapshot.key,
+                task: task
+            }
+            commit('addTask', payload)
+        })
+
+        tasks.on('child_changed', snapshot => {
+            let task = snapshot.val()
+            let payload = {
+                id: snapshot.key,
+                updates: task
+            }
+
+            commit('updateTask', payload)
+        })
+
+        tasks.on('child_removed', snapshot => {
+            commit('deleteTask', snapshot.key)
+        })
+    },
+    fbAddTask({}, payload) {
+        let currentUser = firebaseAuth.currentUser;
+        let taskRef = firebaseDb.ref('tasks/' + currentUser.uid + '/' + payload.id)
+        taskRef.set(payload.task)
+    },
+    fbUpdateTask({}, payload) {
+        let currentUser = firebaseAuth.currentUser;
+        let taskRef = firebaseDb.ref('tasks/' + currentUser.uid + '/' + payload.id)
+        taskRef.update(payload.updates)
+    },
+    fbDeleteTask({}, taskId) {
+        let currentUser = firebaseAuth.currentUser;
+        let taskRef = firebaseDb.ref('tasks/' + currentUser.uid + '/' + taskId)
+        taskRef.remove()
     }
 }
 

@@ -5,7 +5,7 @@
         <template v-slot:avatar>
           <q-icon name="account_circle" color="primary" />
         </template>
-        {{mode | titleCase }} to access your todos anywhere!
+        {{ mode | titleCase }} to access your todos anywhere!
       </q-banner>
     </div>
     <div class="row">
@@ -14,6 +14,7 @@
         outlined
         v-model="formData.email"
         label="Email"
+        ref="email"
         stack-label
         :rules="[
           (val) => validateEmail(val) || 'Please use maximum 6 characters',
@@ -25,6 +26,7 @@
       <q-input
         class="col q-mb-md"
         outlined
+        ref="password"
         type="password"
         v-model="formData.password"
         label="Password"
@@ -41,6 +43,7 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
 export default {
   props: ["mode"],
   data() {
@@ -52,8 +55,17 @@ export default {
     };
   },
   methods: {
+    ...mapActions("auth", ["registerUser", "loginUser"]),
     onFormSubmited() {
-      console.log("submited");
+      this.$refs.email.validate();
+      this.$refs.password.validate();
+      if (!this.$refs.email.hasError && !this.$refs.password.hasError) {
+        if (this.mode == "login") {
+          this.loginUser(this.formData);
+        } else {
+          this.registerUser(this.formData);
+        }
+      }
     },
     validateEmail(email) {
       const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -63,8 +75,8 @@ export default {
   filters: {
     titleCase(string) {
       return string.charAt(0).toUpperCase() + string.slice(1);
-    }
-  }
+    },
+  },
 };
 </script>
 
