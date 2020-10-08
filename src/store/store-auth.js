@@ -40,6 +40,9 @@ const actions = {
             }
             else {
                 commit('setLoggedIn', false)
+                commit('tasks/setTasksDownloaded', false, {
+                    root: true
+                })
                 LocalStorage.set('loggedIn', false)
                 this.$router.replace('/auth').catch(err => { })
             }

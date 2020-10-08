@@ -6,6 +6,7 @@ const state = {
     tasks: {
     },
     search: '',
+    tasksDownloaded: false
 }
 
 const mutations = {
@@ -22,6 +23,9 @@ const mutations = {
     },
     setSearch(state, searchPhrase) {
         state.search = searchPhrase
+    },
+    setTasksDownloaded(state, value) {
+        state.tasksDownloaded = value
     }
 }
 
@@ -46,6 +50,10 @@ const actions = {
     fbReadData({ commit }) {
         let currentUser = firebaseAuth.currentUser;
         let tasks = firebaseDb.ref('tasks/' + currentUser.uid)
+
+        tasks.once('value', snapshot => {
+            commit('setTasksDownloaded', true)
+        })
         tasks.on('child_added', snapshot => {
             let task = snapshot.val()
             let payload = {

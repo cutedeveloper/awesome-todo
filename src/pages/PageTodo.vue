@@ -1,6 +1,9 @@
 <template>
   <q-page>
-    <div class="q-pa-md absolute full-width full-height column">
+    <span v-if="!tasksDownloaded" class="absolute-center">
+      <q-spinner-grid color="primary" size="2em"/>
+    </span>
+    <div class="q-pa-md absolute full-width full-height column" v-else>
       <search />
       <no-tasks v-if="!Object.keys(tasksTodo).length && !search" />
       <q-scroll-area class="q-scroll-area-tasks">
@@ -42,7 +45,7 @@ export default {
   },
   computed: {
     ...mapGetters("tasks", ["tasksTodo", "tasksCompleted"]),
-    ...mapState("tasks", ["search"]),
+    ...mapState("tasks", ["search", 'tasksDownloaded']),
   },
   components: {
     "add-task": require("components/Modals/AddTask.vue").default,
